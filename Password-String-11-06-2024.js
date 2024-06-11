@@ -10,7 +10,7 @@ fs.readFile("password.txt", (err, data) => {
         } else if (n[3] < 500) {
             console.log(`"User:" ${n[0]},  Command interpreter ${n[6]}`)
         } else {
-            console.log("No user found")
+            console.log("Not user found")
         }
     })
 })
