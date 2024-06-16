@@ -144,13 +144,7 @@ const Home = () => {
                         label="No Ball"
                     />
                 </div>
-                {/* {overComplete && (
-                    <div className="d-flex justify-content-center align-items-center mt-3">
-                        <h3>Over is complete</h3>
-                    </div>
-                )} */}
                 <div className="mt-5">
-                    {/* {{completeOver}} */}
                     <h1>Overs:</h1>
                     {overs.map((over, index) => (
                         <div key={index}>
