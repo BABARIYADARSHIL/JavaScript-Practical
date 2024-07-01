@@ -10,6 +10,9 @@ const Home = () => {
     const [overs, setOvers] = useState([]);
     const [overComplete, setOverComplete] = useState(false);
     const [gameOver, setGameOver] = useState(false);
+    const [teamOneScore, setTeamOneScore] = useState(null);
+    const [teamTwoScore, setTeamTwoScore] = useState(null);
+    const [currentTeam, setCurrentTeam] = useState(1);
 
     const HandelInput = (index, value) => {
         const temp = [...inputs];
@@ -17,44 +20,52 @@ const Home = () => {
         setInputs(temp);
 
     }
-    const handleButtonCount = (value) => {
+    const handleButtonCount = (value, isExtra = false) => {
         if (gameOver) {
             alert('Match is over');
             return;
-          }
-        if (currentBall < 6) {
-            const newCount = count + value
-            setCount(newCount);
+        }
+        const newCount = count + value
+        setCount(newCount);
+
+        if (currentBall < 6 || isExtra) {
             const temp = [...inputs];
-            temp[currentBall] = value;
-            setInputs(temp);
-            setCurrentBall(currentBall + 1);
-            if (currentBall === 5) {
-                setOverComplete(true);
-                completeOver(temp, newCount);
+            if (!isExtra) {
+                temp[currentBall] = value;
+                setInputs(temp);
+                setCurrentBall(currentBall + 1);
+                if (currentBall === 5) {
+                    setOverComplete(true);
+                    completeOver(temp, newCount);
+                }
+            } else {
+                temp[currentBall] += value;
+                setInputs(temp);
+                
             }
         } else {
-            alert("over is finish")
+            alert('Over is complete');
         }
     }
     const completeOver = (temp, newCount) => {
-        if (overs.length+1 < 2) {
-            setOvers([...overs, temp]);
-            setInputs(Array(6).fill(0));
-            setCurrentBall(0);
-            setOverComplete(false);
-        } else {
-            alert("2 over is compeleted")
-            setOvers([...overs, temp]);
-            setOverComplete(true);
+        setOvers([...overs, temp]);
+        setInputs(Array(6).fill(0));
+        setCurrentBall(0);
+        setOverComplete(false);
+
+        if (currentTeam === 1  && overs.length + 1 >= 2) {
+            setTeamOneScore(newCount);
+            setCurrentTeam(2);
+            restGame();
+        } else if(currentTeam === 2 && overs.length + 1 >= 2){
+            setTeamTwoScore(newCount);
             setGameOver(true);
-            
+
         }
     }
 
-
     const HandelButtonCountWicket = () => {
-        if (currentBall< 12 && wicket < 10) {
+        if (currentBall < 12 && wicket < 10) {
             setWicket(wicket + 1)
             if (currentBall < 6) {
                 setCurrentBall(currentBall + 1);
@@ -63,19 +74,27 @@ const Home = () => {
                     completeOver(inputs, count);
                 }
             }
-
         } else if (wicket === 10) {
             alert("Matchh is over")
             setGameOver(true);
         }
     }
+
+    const restGame = () =>{
+        setCount(0);
+        setWicket(0);
+        setInputs(Array(6).fill(0));
+        setCurrentBall(0);
+        setOvers([]);
+        setOverComplete(false);
+
+    }
+
     return (
         <>
-
-
             <div className="container mt-5">
                 <form className='my-2'>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div className='d-flex justify-content-center p-2'>
                         {inputs.map((input, index) => {
                             return (<Input
                                 key={index}
@@ -134,12 +153,12 @@ const Home = () => {
                         label="Wicket"
                     />
                     <Button
-                        onClick={() => handleButtonCount(1)}
+                        onClick={() => handleButtonCount(1, true)}
                         className="btn btn-primary mx-2"
                         label="Wide Ball"
                     />
                     <Button
-                        onClick={() => handleButtonCount(1)}
+                        onClick={() => handleButtonCount(1, true)}
                         className="btn btn-primary mx-2"
                         label="No Ball"
                     />
@@ -152,11 +171,19 @@ const Home = () => {
                         </div>
                     ))}
                 </div>
-                <h2>team 1 scoer is {count}</h2>
+                <h2>team 1 scoer is {teamOneScore}</h2>
+                <h2>team 2 scoer is {teamTwoScore}</h2>
+                {gameOver && (
+                    <h1>
+                        winner : {teamOneScore > teamTwoScore ? 'Team 1': 'Team 2'}
+                    </h1>
+                )
+
+                }
             </div>
         </>
     )
 
 }
 
-export default Home
+export default Home;
